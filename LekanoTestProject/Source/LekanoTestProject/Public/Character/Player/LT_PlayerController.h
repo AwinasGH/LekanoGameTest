@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+#include "GameMode/LT_InGameMatchStateInfo.h"
 #include "LT_PlayerController.generated.h"
 
 class ALT_GameHUD;
@@ -35,9 +36,18 @@ protected:
 
 	virtual void BeginPlay() override;
 	
-	
-//>>...........................................................................................................................................<<//
 
+//>>>...............................................................................................................................................................................<<<//
+//>>>...............................................................................................................................................................................<<<//
+
+
+//Blueprint protected values:
+protected:
+
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, meta = (BlueprintProtected))
+		void OnInGameMatchStateChanged(const EInGameMatchState NewMatchState);
+		virtual void OnInGameMatchStateChanged_Implementation(const EInGameMatchState NewMatchState);
+	
 //Blueprint values
 public:
 

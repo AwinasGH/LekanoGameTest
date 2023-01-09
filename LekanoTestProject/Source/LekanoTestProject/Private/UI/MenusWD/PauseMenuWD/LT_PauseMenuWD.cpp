@@ -16,8 +16,7 @@ ULT_PauseMenuWD::ULT_PauseMenuWD(const FObjectInitializer& ObjectInitializer) : 
 void ULT_PauseMenuWD::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	//AGameModeBase::StartPlay()
+	
 	BackToMenuButton->OnClicked.AddDynamic(this, &ULT_PauseMenuWD::OnBackToMenuButtonClicked);
 }
 

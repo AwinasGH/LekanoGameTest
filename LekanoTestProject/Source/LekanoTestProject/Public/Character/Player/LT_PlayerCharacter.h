@@ -71,6 +71,17 @@ protected:
 //>>>...............................................................................................................................................................................<<<//
 //>>>...............................................................................................................................................................................<<<//
 	
+//Blueprint protected values:
+protected:
 	
+//.................................Components.....................................................//
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerCharacter|Components")
+		class UCameraComponent* ThirdPersonCameraComponent = nullptr;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerCharacter|Components")
+		class USpringArmComponent* SpringArmComponent = nullptr;
+
+//................................................................................................//
 
 };

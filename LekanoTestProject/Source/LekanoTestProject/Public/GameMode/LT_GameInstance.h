@@ -139,7 +139,7 @@ public:
 	void OnFindSessionsComplete(bool bWasSuccessful);
 
 
-	bool JoinSession(const TSharedPtr<const FUniqueNetId> UserId, FName SessionName, const FOnlineSessionSearchResult& SearchResult);
+	bool JoinSessionByName(const TSharedPtr<const FUniqueNetId> UserId, FName SessionName, const FOnlineSessionSearchResult& SearchResult);
 
 	bool DestroySession();
 

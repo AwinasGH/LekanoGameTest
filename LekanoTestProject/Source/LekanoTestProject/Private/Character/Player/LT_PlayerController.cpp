@@ -6,11 +6,12 @@
 #include "Character/Player/LT_PlayerCharacter.h"
 
 #include "GameMode/LT_GameHUD.h"
+#include "GameMode/LT_GameState.h"
 
 
 ALT_PlayerController::ALT_PlayerController()
 {
-	
+	bReplicates = true;
 }
 
 
@@ -44,6 +45,19 @@ void ALT_PlayerController::BeginPlay()
 	MyGameHUD = Cast<ALT_GameHUD>(GetHUD());
 
 	SetInputMode(FInputModeGameOnly());
+
+	ALT_GameState* LGameState = Cast<ALT_GameState>(GetWorld()->GetGameState());
+	if( !IsValid(LGameState) ) return;
+
+	LGameState->OnInGameMatchStateChangedBind.AddDynamic(this, &ALT_PlayerController::OnInGameMatchStateChanged);
+}
+
+void ALT_PlayerController::OnInGameMatchStateChanged_Implementation(const EInGameMatchState NewMatchState)
+{
+	if( NewMatchState == EInGameMatchState::Ended )
+	{
+		if( IsValid(MyGameHUD) ) MyGameHUD->CreateScoreBoardWD();
+	}
 }
 
 

@@ -85,6 +85,8 @@ void ALT_GameHUD::BeginPlay()
 
 	MyController = Cast<ALT_PlayerController>(GetOwningPlayerController());
 	GameInstance = Cast<ULT_GameInstance>(GetGameInstance());
+	
+	MainMenuWD = nullptr;
 }
 
 
@@ -267,7 +269,46 @@ void ALT_GameHUD::RemoveJoinSessionWD()
 	}
 }
 
+void ALT_GameHUD::CreateScoreBoardWD()
+{
+	RemoveAllWD();
 
+	if( !ScoreBoardWDClass.IsNull() && !ScoreBoardWD )
+	{
+		ScoreBoardWD = CreateWidget<ULT_ScoreBoardWD>(GetWorld(), ScoreBoardWDClass.LoadSynchronous());
+		if( IsValid(ScoreBoardWD) )
+		{
+			ScoreBoardWD->InitializeScoreBoardWD(this);
+			ScoreBoardWD->AddToViewport();
+		}
+	}
+}
+
+void ALT_GameHUD::SetFocusToScoreBoardWD()
+{
+	if( IsValid(ScoreBoardWD) )
+	{
+		MyController->SetShowMouseCursor(true);
+		
+		AddWidgetToFocusStack(EWidgetFocusType::UIOnly, ScoreBoardWD);
+		SetFocusToWidget(EWidgetFocusType::UIOnly, ScoreBoardWD);
+	}
+}
+
+void ALT_GameHUD::RemoveScoreBoardWD()
+{
+	if( IsValid(ScoreBoardWD) )
+	{
+		RemoveWidgetFromFocusStack(ScoreBoardWD);
+		FocusLastWidgetInStack();
+
+		ScoreBoardWD->RemoveFromParent();
+		ScoreBoardWD = nullptr;
+		
+		MyController->SetShowMouseCursor(false);
+		MyController->SetInputMode(FInputModeGameOnly());
+	}
+}
 
 
 void ALT_GameHUD::RemoveAllWD()
@@ -275,9 +316,10 @@ void ALT_GameHUD::RemoveAllWD()
 	RemoveMainMenuWD();
 	RemoveCreateSessionWD();
 	RemoveJoinSessionWD();
+	RemoveScoreBoardWD();
 }
 
 void ALT_GameHUD::RemoveAllGameplayWD()
 {
-	
+	RemoveScoreBoardWD();
 }

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/HUD.h"
+#include "UI/GameplayWD/ScoreBoardWD/LT_ScoreBoardWD.h"
 #include "LT_GameHUD.generated.h"
 
 
@@ -117,6 +118,13 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "JoinSessionWD")
 		void RemoveJoinSessionWD();
 
+	UFUNCTION(BlueprintCallable, Category = "ScoreBoardWD")
+		void CreateScoreBoardWD();
+	UFUNCTION(BlueprintCallable, Category = "ScoreBoardWD")
+		void SetFocusToScoreBoardWD();
+	UFUNCTION(BlueprintCallable, Category = "ScoreBoardWD")
+		void RemoveScoreBoardWD();
+
 	
 
 	UFUNCTION(BlueprintCallable)
@@ -149,6 +157,11 @@ protected:
 		TSoftClassPtr<ULT_JoinSessionWD> JoinSessionWDClass;
 	UPROPERTY(BlueprintReadOnly, Category = "Widgets")
 		ULT_JoinSessionWD* JoinSessionWD = nullptr;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Widgets")
+		TSoftClassPtr<ULT_ScoreBoardWD> ScoreBoardWDClass;
+	UPROPERTY(BlueprintReadOnly, Category = "Widgets")
+		ULT_ScoreBoardWD* ScoreBoardWD = nullptr;
 	
 
 //Blueprint public values

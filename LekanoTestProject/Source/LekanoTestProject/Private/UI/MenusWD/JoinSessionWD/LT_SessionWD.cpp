@@ -33,7 +33,7 @@ void ULT_SessionWD::InitializeSessionWD(FOnlineSessionSearchResult InSearchResul
 	AmountOfPlayersText->SetText(FText::FromString(
 		FString::FromInt(InSearchResult.Session.SessionSettings.NumPublicConnections - InSearchResult.Session.NumOpenPublicConnections) + "/"
 		+ FString::FromInt(InSearchResult.Session.NumOpenPublicConnections + 1)));
-	PingText->SetText(FText::FromString(FString::FromInt(InSearchResult.PingInMs) + "ms"));
+		PingText->SetText(FText::FromString(FString::FromInt(InSearchResult.PingInMs) + "ms"));
 }
 
 
@@ -44,6 +44,6 @@ void ULT_SessionWD::OnJoinSessionButtonClicked()
 		const ULocalPlayer* LPlayer = GameInstance->GetFirstGamePlayer();
 		if( !IsValid(LPlayer) ) return;
 		
-		GameInstance->JoinSession(LPlayer->GetPreferredUniqueNetId().GetUniqueNetId(), NAME_GameSession, SearchResult);
+		GameInstance->JoinSessionByName(LPlayer->GetPreferredUniqueNetId().GetUniqueNetId(), NAME_GameSession, SearchResult);
 	} 
 }

@@ -39,7 +39,7 @@ void ULT_CreateSessionWD::OnCreateSessionButtonClicked()
 		const ULocalPlayer* LPlayer = GameInstance->GetFirstGamePlayer();
 		if( !IsValid(LPlayer) ) return;
 		
-		GameInstance->HostSession(
+		bool Successful = GameInstance->HostSession(
 			LPlayer->GetUniqueNetIdForPlatformUser().GetUniqueNetId(),
 			NAME_GameSession,
 			IsLANCheckBox->IsChecked(),

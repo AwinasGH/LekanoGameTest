@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 
 #include "GameFramework/Character.h"
+#include "GameMode/LT_InGameMatchStateInfo.h"
 
 #include "PersonInfo/LT_CharacterMovementInfo.h"
 
@@ -41,6 +42,8 @@ public:
 protected:
 	
 	virtual void BeginPlay() override;
+
+	virtual void Destroyed() override;
 	
 	
 //>>>...............................................................................................................................................................................<<<//
@@ -65,10 +68,16 @@ public:
 //..............................................Moving......................................................//
 
 	
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "BaseCharacter|Moving")
-		bool GetCanMove() const;
-		virtual bool GetCanMove_Implementation() const { return true; };
+	UFUNCTION(BlueprintCallable, Category = "BaseCharacter|Moving")
+		FORCEINLINE bool GetCanMove() const { return CanMove; };
+
+	UFUNCTION(BlueprintCallable, Category = "BaseCharacter|Moving")
+		FORCEINLINE bool SetCanMove(bool NewCanMove) { return CanMove = NewCanMove; };
+
 	
+	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, meta = (BlueprintProtected))
+		void OnInGameMatchStateChanged(const EInGameMatchState NewMatchState);
+		virtual void OnInGameMatchStateChanged_Implementation(const EInGameMatchState NewMatchState);
 
 	UFUNCTION(BlueprintCallable, Server, Unreliable, Category = "BaseCharacter|Actions|Moving")
 		void DoJump();
@@ -78,16 +87,6 @@ public:
 		void DoJump_ServerToAll_Implementation();
 	
 //...........................................................................................................//
-
-
-//.................................VisualEffects/SoundEffects...............................................//
-	
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "BaseCharacter|SoundEffects")
-		void DoJumpSound();
-		virtual void DoJumpSound_Implementation() {}
-
-//..........................................................................................................//
-	
 	
 
 //Blueprint public values
@@ -117,20 +116,20 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
 		float MovingAcceleration = 900.0f;
 
+	/*
+		Character moving acceleration
+	*/
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
+		bool CanMove = false;
+
 
 //Blueprint protected values:
 protected:
 	
 //.................................Components.....................................................//
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerCharacter|Components")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "BaseCharacter|Components")
 		class ULT_MovementComponent* CharacterMovementComponent = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerCharacter|Components")
-		class UCameraComponent* ThirdPersonCameraComponent = nullptr;
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "PlayerCharacter|Components")
-		class USpringArmComponent* SpringArmComponent = nullptr;
 
 //................................................................................................//
 

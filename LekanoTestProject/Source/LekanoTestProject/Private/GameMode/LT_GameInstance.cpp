@@ -98,7 +98,7 @@ void ULT_GameInstance::OnCreateSessionComplete(FName SessionName, bool bWasSucce
 			{
 				OnStartSessionCompleteDelegateHandle = SessionInterface->AddOnStartSessionCompleteDelegate_Handle(OnStartSessionCompleteDelegate);
 
-				SessionInterface->StartSession(SessionName);
+				bool Successful = SessionInterface->StartSession(SessionName);
 			}
 		}
 	}
@@ -183,7 +183,7 @@ void ULT_GameInstance::OnFindSessionsComplete(bool bWasSuccessful)
 
 
 
-bool ULT_GameInstance::JoinSession(const TSharedPtr<const FUniqueNetId> UserId, FName SessionName, const FOnlineSessionSearchResult& SearchResult)
+bool ULT_GameInstance::JoinSessionByName(const TSharedPtr<const FUniqueNetId> UserId, FName SessionName, const FOnlineSessionSearchResult& SearchResult)
 {
 	bool bSuccessful = false;
 

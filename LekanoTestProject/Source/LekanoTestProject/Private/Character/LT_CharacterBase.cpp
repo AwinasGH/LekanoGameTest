@@ -3,14 +3,16 @@
 
 #include "LekanoTestProject/Public/Character/LT_CharacterBase.h"
 
-#include "Camera/CameraComponent.h"
 #include "Character/Components/LT_MovementComponent.h"
 #include "Components/CapsuleComponent.h"
 
 #include "GameFramework/CharacterMovementComponent.h"
-#include "GameFramework/SpringArmComponent.h"
 
 #include "GameMode/LT_GameInstance.h"
+
+#include "GameFramework/PlayerState.h"
+#include "GameMode/LT_GameState.h"
+#include "GameMode/LT_PlayerState.h"
 
 
 ALT_CharacterBase::ALT_CharacterBase(const FObjectInitializer& ObjectInitializer)
@@ -22,19 +24,7 @@ ALT_CharacterBase::ALT_CharacterBase(const FObjectInitializer& ObjectInitializer
 
 	CharacterMovementComponent = Cast<ULT_MovementComponent>(GetCharacterMovement());
 
-	AddDefaultComponent(SpringArmComponent, USpringArmComponent, "SpringArmComponent", false)
-	SpringArmComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
-	SpringArmComponent->SocketOffset = FVector(0, 50, 50);
-	SpringArmComponent->SetRelativeLocation(FVector(0, 0, 100));
-	SpringArmComponent->bUsePawnControlRotation = true;
-
-	AddDefaultComponent(ThirdPersonCameraComponent, UCameraComponent, "ThirdPersonCameraComponent", false)
-	ThirdPersonCameraComponent->AttachToComponent(SpringArmComponent, FAttachmentTransformRules::KeepRelativeTransform, USpringArmComponent::SocketName);
-	ThirdPersonCameraComponent->bUsePawnControlRotation = false;
-	ThirdPersonCameraComponent->SetActive(true);
-	
-
-	//.............................................................................//
+	//.............................................................................//\
 	
 	bUseControllerRotationPitch = false;
 	bUseControllerRotationYaw = false;
@@ -64,7 +54,49 @@ void ALT_CharacterBase::BeginPlay()
 	Super::BeginPlay();
 
 	GameInstance = Cast<ULT_GameInstance>(GetGameInstance());
+
+	ALT_GameState* LGameState = Cast<ALT_GameState>(GetWorld()->GetGameState());
+	if( !IsValid(LGameState) ) return;
+
+	ALT_PlayerState* LPlayerState = Cast<ALT_PlayerState>(GetPlayerState());
+	if( IsValid(LPlayerState) )
+	{
+		LPlayerState->SetIsDead(false);
+	}
+
+	LGameState->OnInGameMatchStateChangedBind.AddDynamic(this, &ALT_CharacterBase::OnInGameMatchStateChanged);
 }
+
+
+void ALT_CharacterBase::Destroyed()
+{
+	if( IsValid(Controller) && Controller->IsLocalController() )
+	{
+		Controller->ChangeState(NAME_Spectating);
+		
+		ALT_PlayerState* LPlayerState = Cast<ALT_PlayerState>(GetPlayerState());
+		if( IsValid(LPlayerState) )
+		{
+			LPlayerState->SetIsDead(true);
+		}
+	}
+	
+	Super::Destroyed();
+}
+
+
+void ALT_CharacterBase::OnInGameMatchStateChanged_Implementation(const EInGameMatchState NewMatchState)
+{
+	if( NewMatchState == EInGameMatchState::Preparation )
+	{
+		this->SetCanMove(false);
+	}
+	else if( NewMatchState == EInGameMatchState::InProgress )
+	{
+		this->SetCanMove(true);
+	}
+}
+
 
 void ALT_CharacterBase::DoJump_Implementation()
 {
@@ -76,8 +108,6 @@ void ALT_CharacterBase::DoJump_Implementation()
 void ALT_CharacterBase::DoJump_ServerToAll_Implementation()
 {
 	Jump();
-
-	DoJumpSound();
 }
 
 

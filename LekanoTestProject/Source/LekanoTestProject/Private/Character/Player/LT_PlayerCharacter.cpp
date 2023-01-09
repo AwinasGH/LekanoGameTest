@@ -7,6 +7,7 @@
 #include "Character/Components/LT_MovementComponent.h"
 #include "Character/Player/LT_PlayerController.h"
 #include "Character/Player/LT_PlayerInputActions.h"
+#include "GameFramework/SpringArmComponent.h"
 #include "GameMode/LT_GameHUD.h"
 #include "GameMode/LT_GameInstance.h"
 
@@ -16,7 +17,16 @@ ALT_PlayerCharacter::ALT_PlayerCharacter(const FObjectInitializer& ObjectInitial
 	CharacterMovementComponent->bOrientRotationToMovement = true;
 	CharacterMovementComponent->GravityScale = 1.0f;
 
-	
+	AddDefaultComponent(SpringArmComponent, USpringArmComponent, "SpringArmComponent", false)
+	SpringArmComponent->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepRelativeTransform);
+	SpringArmComponent->SocketOffset = FVector(0, 50, 50);
+	SpringArmComponent->SetRelativeLocation(FVector(0, 0, 100));
+	SpringArmComponent->bUsePawnControlRotation = true;
+
+	AddDefaultComponent(ThirdPersonCameraComponent, UCameraComponent, "ThirdPersonCameraComponent", false)
+	ThirdPersonCameraComponent->AttachToComponent(SpringArmComponent, FAttachmentTransformRules::KeepRelativeTransform, USpringArmComponent::SocketName);
+	ThirdPersonCameraComponent->bUsePawnControlRotation = false;
+	ThirdPersonCameraComponent->SetActive(true);
 }
 
 void ALT_PlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -160,6 +170,8 @@ void ALT_PlayerCharacter::OnReleaseSprint()
 
 void ALT_PlayerCharacter::OnPressParkourAction()
 {
+	if( !GetCanMove() ) return;
+	
 	DoJump();
 }
 
@@ -171,7 +183,7 @@ void ALT_PlayerCharacter::OnPressOpenMenu()
 	if( !IsValid(LGameInstance) || !LGameInstance->GetIsGameStarted() || !IsValid(LPlayerController) ) return;
 	
 
-	if( ALT_GameHUD* LGameHUD = Cast<ALT_GameHUD>(LPlayerController->GetHUD()) ) LGameHUD->CreatePauseMenuWD(); // при фокусе в виджете добавить считывание esc
+	if( ALT_GameHUD* LGameHUD = Cast<ALT_GameHUD>(LPlayerController->GetHUD()) ) LGameHUD->CreatePauseMenuWD();
 }
 
 

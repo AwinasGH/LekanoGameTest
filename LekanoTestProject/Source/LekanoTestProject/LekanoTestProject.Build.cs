@@ -21,7 +21,5 @@ public class LekanoTestProject : ModuleRules
 			"OnlineSubsystem",
 			"OnlineSubsystemUtils"
 		});
-		
-		DynamicallyLoadedModuleNames.Add("OnlineSubsystemNull");
 	}
 }
