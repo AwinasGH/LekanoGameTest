@@ -6,6 +6,9 @@
 #include "GameFramework/PlayerState.h"
 #include "LT_PlayerState.generated.h"
 
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnPlayerStatusChanged)
+
 /**
  * 
  */
@@ -22,11 +25,13 @@ public:
 //private values
 public:
 
-	FORCEINLINE bool GetHasFinished() const { return HasFinished; }
+	UPROPERTY(BlueprintAssignable)
+		FOnPlayerStatusChanged OnPlayerStatusChanged;
+	
+//private values
+public:
 	
 	void SetHasFinished(const bool NewValue);
-
-	FORCEINLINE bool GetIsDead() const { return IsDead; }
 	
 	void SetIsDead(const bool NewValue);
 
@@ -43,4 +48,18 @@ private:
 
 	UPROPERTY(Replicated)
 		bool IsDead = false;
+
+
+//>>>...............................................................................................................................................................................<<<//
+//>>>...............................................................................................................................................................................<<<//
+	
+	
+//Blueprint public values:
+public:
+
+	UFUNCTION(BlueprintCallable)
+		FORCEINLINE bool GetHasFinished() const { return HasFinished; }
+
+	UFUNCTION(BlueprintCallable)
+		FORCEINLINE bool GetIsDead() const { return IsDead; }
 };

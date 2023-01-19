@@ -12,4 +12,6 @@ const FName FPlayerInputActionNames::WalkAction = "Walk";
 
 const FName FPlayerInputActionNames::ParkourAction = "ParkourAction";
 
+const FName FPlayerInputActionNames::AttackAction = "AttackAction";
+
 const FName FPlayerInputActionNames::OpenMenuAction = "PauseMenu";

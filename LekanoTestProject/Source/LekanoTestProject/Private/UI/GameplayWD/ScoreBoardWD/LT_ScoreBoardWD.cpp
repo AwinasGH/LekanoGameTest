@@ -30,18 +30,8 @@ void ULT_ScoreBoardWD::NativeConstruct()
 	if( PlayerScoreWDClass.IsNull() ) return;
 	
 
-	TArray<ALT_PlayerState*> Finalists;														//TODO Make as variable in GameState
-	for( const auto& BasePlayerState : LGameState->PlayerArray )
-	{
-		if( ALT_PlayerState* LPlayerState = Cast<ALT_PlayerState>(BasePlayerState) )
-		{
-			if( LPlayerState->GetHasFinished() == true ) Finalists.Add(LPlayerState);
-		}
-	}
-	Algo::Sort(Finalists, [](const ALT_PlayerState* A, const ALT_PlayerState* B)
-	{
-		return A->GetScore() < B->GetScore();
-	});
+	TArray<ALT_PlayerState*> Finalists;
+	LGameState->GetSortedFinalists(Finalists);
 
 	for(const auto& BasePlayerState : Finalists)
 	{
@@ -57,14 +47,8 @@ void ULT_ScoreBoardWD::NativeConstruct()
 	}
 	
 	
-	TArray<APlayerState*> Losers;															//TODO Make as variable in GameState
-	for( const auto& BasePlayerState : LGameState->PlayerArray )
-	{
-		if( ALT_PlayerState* LPlayerState = Cast<ALT_PlayerState>(BasePlayerState) )
-		{
-			if( LPlayerState->GetHasFinished() != true ) Losers.Add(BasePlayerState.Get());
-		}
-	}
+	TArray<ALT_PlayerState*> Losers;
+	LGameState->GetSortedLosers(Losers);
 
 	for(const auto& BasePlayerState : Losers)
 	{

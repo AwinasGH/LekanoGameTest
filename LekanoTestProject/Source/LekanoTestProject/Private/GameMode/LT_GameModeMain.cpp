@@ -30,14 +30,7 @@ void ALT_GameModeMain::BeginPlay()
 
 bool ALT_GameModeMain::ReadyToStartMatch_Implementation()
 {
-	if ( bDelayedStart ) return false;
-	
-	if (GetMatchState() == MatchState::WaitingToStart)
-	{
-		if (NumPlayers >= MinPlayersNumToStartMatch) return true;
-	}
-	
-	return false;
+	return !bDelayedStart && GetMatchState() == MatchState::WaitingToStart && NumPlayers >= MinPlayersNumToStartMatch;
 }
 
 void ALT_GameModeMain::OnInGameMatchStateChanged_Implementation(const EInGameMatchState NewMatchState)
@@ -47,9 +40,12 @@ void ALT_GameModeMain::OnInGameMatchStateChanged_Implementation(const EInGameMat
 		ALT_GameState* LGameState = GetGameState<ALT_GameState>();
 		if( !IsValid(LGameState) ) return;
 
-		for( const auto& Player : LGameState->PlayerArray )
+		for( const auto& BasePlayerState : LGameState->PlayerArray )
 		{
-			if( Player->GetPawn() ) Player->GetPawn()->Destroy();
+			if( ALT_PlayerState* LPlayerState = Cast<ALT_PlayerState>(BasePlayerState) )
+			{
+				if( LPlayerState->GetPawn() && !LPlayerState->GetIsDead() ) LPlayerState->GetPawn()->Destroy(true);
+			}
 		}
 	}
 }

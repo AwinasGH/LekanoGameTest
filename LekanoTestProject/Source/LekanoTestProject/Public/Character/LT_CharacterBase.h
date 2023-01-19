@@ -5,7 +5,8 @@
 #include "CoreMinimal.h"
 
 #include "GameFramework/Character.h"
-#include "GameMode/LT_InGameMatchStateInfo.h"
+
+#include "GameMode/InGameMatchStateInfo/LT_InGameMatchStateInfo.h"
 
 #include "PersonInfo/LT_CharacterMovementInfo.h"
 
@@ -44,7 +45,6 @@ protected:
 	virtual void BeginPlay() override;
 
 	virtual void Destroyed() override;
-	
 	
 //>>>...............................................................................................................................................................................<<<//
 //>>>...............................................................................................................................................................................<<<//
@@ -98,28 +98,28 @@ public:
 	/*
 		Character sprint speed
 	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
 		float SprintSpeed = 900.0f;
 	/*
 		Character jog speed
 	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
 		float JogSpeed = 600.0f;
 	/*
 		Character walk speed
 	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
 		float WalkSpeed = 300.0f;
 	/*
 		Character moving acceleration
 	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
 		float MovingAcceleration = 900.0f;
 
 	/*
-		Character moving acceleration
+		*
 	*/
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
+	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
 		bool CanMove = false;
 
 

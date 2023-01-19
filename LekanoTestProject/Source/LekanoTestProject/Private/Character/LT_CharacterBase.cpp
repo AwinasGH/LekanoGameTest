@@ -13,6 +13,7 @@
 #include "GameFramework/PlayerState.h"
 #include "GameMode/LT_GameState.h"
 #include "GameMode/LT_PlayerState.h"
+#include "Net/UnrealNetwork.h"
 
 
 ALT_CharacterBase::ALT_CharacterBase(const FObjectInitializer& ObjectInitializer)
@@ -47,6 +48,12 @@ ALT_CharacterBase::ALT_CharacterBase(const FObjectInitializer& ObjectInitializer
 void ALT_CharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	DOREPLIFETIME(ALT_CharacterBase, CanMove);
+	DOREPLIFETIME(ALT_CharacterBase, WalkSpeed);
+	DOREPLIFETIME(ALT_CharacterBase, JogSpeed);
+	DOREPLIFETIME(ALT_CharacterBase, SprintSpeed);
+	DOREPLIFETIME(ALT_CharacterBase, MovingAcceleration);
 }
 
 void ALT_CharacterBase::BeginPlay()
@@ -59,10 +66,7 @@ void ALT_CharacterBase::BeginPlay()
 	if( !IsValid(LGameState) ) return;
 
 	ALT_PlayerState* LPlayerState = Cast<ALT_PlayerState>(GetPlayerState());
-	if( IsValid(LPlayerState) )
-	{
-		LPlayerState->SetIsDead(false);
-	}
+	if( IsValid(LPlayerState) ) LPlayerState->SetIsDead(false);
 
 	LGameState->OnInGameMatchStateChangedBind.AddDynamic(this, &ALT_CharacterBase::OnInGameMatchStateChanged);
 }
@@ -70,17 +74,20 @@ void ALT_CharacterBase::BeginPlay()
 
 void ALT_CharacterBase::Destroyed()
 {
-	if( IsValid(Controller) && Controller->IsLocalController() )
+	if( GetLocalRole() < ROLE_Authority ) return;
+	
+	if( APlayerController* LPlayerController = Cast<APlayerController>(Controller) )
 	{
-		Controller->ChangeState(NAME_Spectating);
-		
-		ALT_PlayerState* LPlayerState = Cast<ALT_PlayerState>(GetPlayerState());
+		LPlayerController->ChangeState(NAME_Spectating);
+		LPlayerController->ClientGotoState(NAME_Spectating);
+
+		ALT_PlayerState* LPlayerState = Cast<ALT_PlayerState>(LPlayerController->PlayerState);
 		if( IsValid(LPlayerState) )
 		{
 			LPlayerState->SetIsDead(true);
 		}
 	}
-	
+
 	Super::Destroyed();
 }
 

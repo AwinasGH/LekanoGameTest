@@ -21,6 +21,8 @@ struct FPlayerInputActionNames
 	//..........Gameplay Actions............//
 	
 	const static FName ParkourAction;
+	
+	const static FName AttackAction;
 
 	//......................................//
 

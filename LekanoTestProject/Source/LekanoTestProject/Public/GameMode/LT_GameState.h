@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "LT_InGameMatchStateInfo.h"
+#include "LT_PlayerState.h"
+#include "InGameMatchStateInfo/LT_InGameMatchStateInfo.h"
 #include "GameFramework/GameState.h"
 #include "LT_GameState.generated.h"
 
@@ -26,17 +27,12 @@ public:
 
 //public methods
 public:
-
-	FORCEINLINE float GetCurrentPreparationTime() const { return CurrentPreparationTime; }
-	
-	FORCEINLINE float GetCurrentMatchTime() const { return CurrentMatchTime; }
-	
-	FORCEINLINE EInGameMatchState GetInGameMatchState() const { return InGameMatchState; }
 	
 	
 	bool IsEveryoneAliveHasFinished() const;
-	
-	void UpdateMainMatchState();
+
+	UFUNCTION()
+		void UpdateMainMatchState();
 	
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
@@ -56,12 +52,27 @@ private:
 	FTimerHandle PreparationTimerHandle;
 
 	FTimerHandle MatchTimerHandle;
+	
 
 	UPROPERTY(Replicated)
 		float CurrentPreparationTime = 0.0f;
 
+	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Preparation")
+		float PreparationTimeStep = 1.0f;
+
+	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Preparation")
+		float PreparationTimeUpdateFrequency = 1.0f;
+	
+
 	UPROPERTY(Replicated)
 		float CurrentMatchTime = 0.0f;
+
+	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Match")
+		float MatchTimeStep = 1.0f;
+
+	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Match")
+		float MatchTimeUpdateFrequency = 1.0f;
+	
 
 	UPROPERTY(Replicated)
 		bool IsPreparationTimerActive = true;
@@ -84,5 +95,28 @@ protected:
 
 	UFUNCTION()
 		virtual void MatchTimerTicker(); // TODO move to GameMode
+
+//>>..........................................................................................................................<<//
+
+
+
+//Blueprint methods
+public:
+
+	UFUNCTION(BlueprintCallable, Category = "Preparation")
+		FORCEINLINE float GetCurrentPreparationTime() const { return CurrentPreparationTime; }
+
+	UFUNCTION(BlueprintCallable, Category = "Match")
+		FORCEINLINE float GetCurrentMatchTime() const { return CurrentMatchTime; }
+
+	UFUNCTION(BlueprintCallable, Category = "InGameMatchState")
+		FORCEINLINE EInGameMatchState GetInGameMatchState() const { return InGameMatchState; }
+
+
+	UFUNCTION(BlueprintCallable, Category = "Players")
+		void GetSortedFinalists(TArray<ALT_PlayerState*>& Finalists);
+
+	UFUNCTION(BlueprintCallable, Category = "Players")
+		void GetSortedLosers(TArray<ALT_PlayerState*>& Losers);
 	
 };

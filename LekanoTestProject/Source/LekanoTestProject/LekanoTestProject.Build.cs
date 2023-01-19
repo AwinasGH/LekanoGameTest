@@ -19,7 +19,8 @@ public class LekanoTestProject : ModuleRules
 			"Slate",
 			"SlateCore",
 			"OnlineSubsystem",
-			"OnlineSubsystemUtils"
+			"OnlineSubsystemUtils",
+			"NetCore"
 		});
 	}
 }

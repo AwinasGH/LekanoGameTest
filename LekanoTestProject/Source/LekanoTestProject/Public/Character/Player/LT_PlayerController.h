@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
-#include "GameMode/LT_InGameMatchStateInfo.h"
+#include "GameMode/InGameMatchStateInfo/LT_InGameMatchStateInfo.h"
 #include "LT_PlayerController.generated.h"
 
 class ALT_GameHUD;
@@ -27,14 +27,29 @@ public:
 //c++ protected methods
 protected:
 
+	virtual void SetupInputComponent() override;
+
+	
+
 	virtual void OnPossess(APawn* InPawn) override;
 
 	virtual void AcknowledgePossession(APawn* InPawn) override; // Client possess
 
 	virtual void OnUnPossess() override;
+
 	
 
+	virtual void OnRep_Pawn() override;
+
+	
+	
 	virtual void BeginPlay() override;
+
+	
+
+	void OnPressAttackAction();
+	
+	void OnPressParkourAction();
 	
 
 //>>>...............................................................................................................................................................................<<<//

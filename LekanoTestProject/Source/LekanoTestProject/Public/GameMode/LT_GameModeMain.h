@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "LT_InGameMatchStateInfo.h"
+#include "InGameMatchStateInfo/LT_InGameMatchStateInfo.h"
 #include "GameFramework/GameMode.h"
 #include "LT_GameModeMain.generated.h"
 
@@ -44,7 +44,7 @@ protected:
 
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, meta = (BlueprintProtected))
 		void OnInGameMatchStateChanged(const EInGameMatchState NewMatchState);
-		virtual void OnInGameMatchStateChanged_Implementation(const EInGameMatchState NewMatchState);
+		virtual void OnInGameMatchStateChanged_Implementation(const EInGameMatchState NewMatchState);;
 
 //Blueprint protected values:
 protected:

@@ -3,9 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
+
 #include "GameFramework/Actor.h"
-#include "GameMode/LT_InGameMatchStateInfo.h"
+
+#include "GameMode/InGameMatchStateInfo/LT_InGameMatchStateInfo.h"
+
 #include "LT_ProcedureBridge.generated.h"
+
 
 UCLASS(Blueprintable)
 class LEKANOTESTPROJECT_API ALT_ProcedureBridge : public AActor

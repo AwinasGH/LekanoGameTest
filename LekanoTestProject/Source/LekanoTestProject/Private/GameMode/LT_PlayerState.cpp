@@ -11,35 +11,42 @@ ALT_PlayerState::ALT_PlayerState(const FObjectInitializer& ObjectInitializer) : 
 	
 }
 
+void ALT_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+
+	FDoRepLifetimeParams SharedParams;
+	SharedParams.bIsPushBased = true;
+	
+	DOREPLIFETIME_WITH_PARAMS_FAST(ALT_PlayerState, HasFinished, SharedParams);
+	DOREPLIFETIME_WITH_PARAMS_FAST(ALT_PlayerState, IsDead, SharedParams);
+}
+
+
 void ALT_PlayerState::SetHasFinished(const bool NewValue)
 {
 	if( GetLocalRole() < ROLE_Authority ) return;
-	
+
+	MARK_PROPERTY_DIRTY_FROM_NAME(ALT_PlayerState, HasFinished, this);
 	HasFinished = NewValue;
 
 	ALT_GameState* LGameState = Cast<ALT_GameState>(GetWorld()->GetGameState());
 	if( !IsValid(LGameState) ) return;
 
-	LGameState->UpdateMainMatchState();
+	OnPlayerStatusChanged.Broadcast();
 }
 
 void ALT_PlayerState::SetIsDead(const bool NewValue)
 {
 	if( GetLocalRole() < ROLE_Authority ) return;
-	
-	HasFinished = NewValue;
+
+	MARK_PROPERTY_DIRTY_FROM_NAME(ALT_PlayerState, IsDead, this);
+	IsDead = NewValue;
 
 	ALT_GameState* LGameState = Cast<ALT_GameState>(GetWorld()->GetGameState());
 	if( !IsValid(LGameState) ) return;
 
-	LGameState->UpdateMainMatchState();
+	OnPlayerStatusChanged.Broadcast();
 }
 
-void ALT_PlayerState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
-{
-	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(ALT_PlayerState, HasFinished);
-	DOREPLIFETIME(ALT_PlayerState, IsDead);
-}
 

@@ -290,8 +290,8 @@ void ALT_GameHUD::SetFocusToScoreBoardWD()
 	{
 		MyController->SetShowMouseCursor(true);
 		
-		AddWidgetToFocusStack(EWidgetFocusType::UIOnly, ScoreBoardWD);
-		SetFocusToWidget(EWidgetFocusType::UIOnly, ScoreBoardWD);
+		AddWidgetToFocusStack(EWidgetFocusType::GameOnly, ScoreBoardWD);
+		SetFocusToWidget(EWidgetFocusType::GameOnly, ScoreBoardWD);
 	}
 }
 
