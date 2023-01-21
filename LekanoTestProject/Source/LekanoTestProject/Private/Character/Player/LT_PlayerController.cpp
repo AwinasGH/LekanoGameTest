@@ -4,7 +4,6 @@
 #include "Character/Player/LT_PlayerController.h"
 
 #include "Character/Player/LT_PlayerCharacter.h"
-#include "Character/Player/LT_PlayerInputActions.h"
 #include "GameFramework/SpectatorPawn.h"
 
 #include "GameMode/LT_GameHUD.h"
@@ -16,32 +15,6 @@ ALT_PlayerController::ALT_PlayerController()
 	bReplicates = true;
 }
 
-void ALT_PlayerController::SetupInputComponent()
-{
-	Super::SetupInputComponent();
-
-	InputComponent->BindAction(FPlayerInputActionNames::AttackAction, IE_Pressed, this, &ALT_PlayerController::OnPressAttackAction);
-	
-	InputComponent->BindAction(FPlayerInputActionNames::ParkourAction, IE_Pressed, this, &ALT_PlayerController::OnPressParkourAction);
-}
-
-
-void ALT_PlayerController::OnPossess(APawn* InPawn)
-{
-	Super::OnPossess(InPawn);
-}
-
-void ALT_PlayerController::AcknowledgePossession(APawn* InPawn)
-{
-	Super::AcknowledgePossession(InPawn);
-}
-
-void ALT_PlayerController::OnUnPossess()
-{
-	Super::OnUnPossess();
-
-	MyCharacter = nullptr;
-}
 
 void ALT_PlayerController::OnRep_Pawn()
 {
@@ -51,6 +24,14 @@ void ALT_PlayerController::OnRep_Pawn()
 	{
 		AutoManageActiveCameraTarget(GetSpectatorPawn());
 	}
+}
+
+APlayerState* ALT_PlayerController::GetNextViewablePlayer(int32 dir)
+{
+	APlayerState* LPlayerState = Super::GetNextViewablePlayer(dir);
+	if( !IsValid(LPlayerState) ) return nullptr;
+
+	return LPlayerState->IsSpectator() ? nullptr : LPlayerState;
 }
 
 
@@ -66,16 +47,6 @@ void ALT_PlayerController::BeginPlay()
 	if( !IsValid(LGameState) ) return;
 
 	LGameState->OnInGameMatchStateChangedBind.AddDynamic(this, &ALT_PlayerController::OnInGameMatchStateChanged);
-}
-
-void ALT_PlayerController::OnPressAttackAction()
-{
-	ServerViewNextPlayer();
-}
-
-void ALT_PlayerController::OnPressParkourAction()
-{
-	ServerViewSelf();
 }
 
 void ALT_PlayerController::OnInGameMatchStateChanged_Implementation(const EInGameMatchState NewMatchState)

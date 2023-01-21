@@ -66,7 +66,11 @@ void ALT_CharacterBase::BeginPlay()
 	if( !IsValid(LGameState) ) return;
 
 	ALT_PlayerState* LPlayerState = Cast<ALT_PlayerState>(GetPlayerState());
-	if( IsValid(LPlayerState) ) LPlayerState->SetIsDead(false);
+	if( IsValid(LPlayerState) )
+	{
+		LPlayerState->SetIsDead(false);
+		LPlayerState->SetIsSpectator(false);
+	}
 
 	LGameState->OnInGameMatchStateChangedBind.AddDynamic(this, &ALT_CharacterBase::OnInGameMatchStateChanged);
 }
@@ -85,6 +89,7 @@ void ALT_CharacterBase::Destroyed()
 		if( IsValid(LPlayerState) )
 		{
 			LPlayerState->SetIsDead(true);
+			LPlayerState->SetIsSpectator(true);
 		}
 	}
 

@@ -17,16 +17,10 @@ ALT_GameState::ALT_GameState(const FObjectInitializer& ObjectInitializer) : Supe
 void ALT_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
 {
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
-
-	DOREPLIFETIME(ALT_GameState, CurrentPreparationTime);
+	
 	DOREPLIFETIME(ALT_GameState, InGameMatchState);
-	DOREPLIFETIME(ALT_GameState, IsPreparationTimerActive);
-	DOREPLIFETIME(ALT_GameState, CurrentMatchTime);
-	DOREPLIFETIME(ALT_GameState, IsMatchTimerActive);
-	DOREPLIFETIME(ALT_GameState, PreparationTimeStep);
-	DOREPLIFETIME(ALT_GameState, PreparationTimeUpdateFrequency);
-	DOREPLIFETIME(ALT_GameState, MatchTimeStep);
-	DOREPLIFETIME(ALT_GameState, MatchTimeUpdateFrequency);
+	DOREPLIFETIME(ALT_GameState, PreparationInfo);
+	DOREPLIFETIME(ALT_GameState, MatchInfo);
 }
 
 
@@ -44,32 +38,29 @@ void ALT_GameState::OnRep_MatchState()
 
 	if ( MatchState == MatchState::InProgress )
 	{
-		CurrentPreparationTime = LGameMode->GetPreparationTime();
-		CurrentMatchTime = LGameMode->GetMatchTime();
+		PreparationInfo.CurrentTime = LGameMode->GetPreparationTime();
+		MatchInfo.CurrentTime = LGameMode->GetMatchTime();
 
-		if( GetLocalRole() == ROLE_Authority )
+		for( const auto& BasePlayerState : PlayerArray )
 		{
-			for( const auto& BasePlayerState : PlayerArray )
+			if( ALT_PlayerState* LPlayerState = Cast<ALT_PlayerState>(BasePlayerState) )
 			{
-				if( ALT_PlayerState* LPlayerState = Cast<ALT_PlayerState>(BasePlayerState) )
-				{
-					LPlayerState->OnPlayerStatusChanged.AddDynamic(this, &ALT_GameState::UpdateMainMatchState);
-				}
+				LPlayerState->OnPlayerStatusChanged.AddDynamic(this, &ALT_GameState::UpdateMainMatchState);
 			}
 		}
 		
 		InGameMatchState = EInGameMatchState::Preparation;
 		OnRep_InGameMatchState();
 		
-		GetWorld()->GetTimerManager().SetTimer(PreparationTimerHandle, this, &ALT_GameState::PreparationTimerTicker,
-																			PreparationTimeUpdateFrequency, true);
+		GetWorld()->GetTimerManager().SetTimer(PreparationInfo.TimerHandle, this, &ALT_GameState::PreparationTimerTicker,
+																			PreparationInfo.TimeUpdateFrequency, true);
 	}
 }
 
 
 void ALT_GameState::OnRep_InGameMatchState()
 {
-	if( InGameMatchState == EInGameMatchState::Ended && GetLocalRole() == ROLE_Authority )
+	if( GetLocalRole() == ROLE_Authority && InGameMatchState == EInGameMatchState::Ended )
 	{
 		for( const auto& BasePlayerState : PlayerArray )
 		{
@@ -88,39 +79,39 @@ void ALT_GameState::OnRep_InGameMatchState()
 
 void ALT_GameState::PreparationTimerTicker()
 {
-	if( FMath::IsNearlyZero(CurrentPreparationTime) || CurrentPreparationTime < 0.0f )
+	if( FMath::IsNearlyZero(PreparationInfo.CurrentTime) || PreparationInfo.CurrentTime < 0.0f )
 	{
 		InGameMatchState = EInGameMatchState::InProgress;
 		OnRep_InGameMatchState();
 
-		GetWorldTimerManager().ClearTimer(PreparationTimerHandle);
+		GetWorldTimerManager().ClearTimer(PreparationInfo.TimerHandle);
 		
-		IsPreparationTimerActive = false;
+		PreparationInfo.IsTimerActive = false;
 
-		GetWorld()->GetTimerManager().SetTimer(MatchTimerHandle, this, &ALT_GameState::MatchTimerTicker,
-																		MatchTimeUpdateFrequency, true);
+		GetWorld()->GetTimerManager().SetTimer(MatchInfo.TimerHandle, this, &ALT_GameState::MatchTimerTicker,
+																		MatchInfo.TimeUpdateFrequency, true);
 
 		return;
 	}
 
-	CurrentPreparationTime -= PreparationTimeStep;
+	PreparationInfo.CurrentTime -= PreparationInfo.TimeStep;
 }
 
 void ALT_GameState::MatchTimerTicker()
 {
-	if( FMath::IsNearlyZero(CurrentMatchTime) || CurrentMatchTime < 0.0f )
+	if( FMath::IsNearlyZero(MatchInfo.CurrentTime) || MatchInfo.CurrentTime < 0.0f )
 	{
 		InGameMatchState = EInGameMatchState::Ended;
 		OnRep_InGameMatchState();
+		
+		GetWorldTimerManager().ClearTimer(MatchInfo.TimerHandle);
 
-		IsMatchTimerActive = false;
-
-		GetWorldTimerManager().ClearTimer(MatchTimerHandle);
+		MatchInfo.IsTimerActive = false;
 
 		return;
 	}
 
-	CurrentMatchTime -= MatchTimeStep;
+	MatchInfo.CurrentTime -= MatchInfo.TimeStep;
 }
 
 void ALT_GameState::GetSortedFinalists(TArray<ALT_PlayerState*>& Finalists)
@@ -177,7 +168,7 @@ void ALT_GameState::UpdateMainMatchState()
 		InGameMatchState = EInGameMatchState::Ended;
 		OnRep_InGameMatchState();
 
-		IsMatchTimerActive = false;
+		MatchInfo.IsTimerActive = false;
 	}
 }
 

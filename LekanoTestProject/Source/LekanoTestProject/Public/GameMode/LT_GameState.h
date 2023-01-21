@@ -25,63 +25,35 @@ public:
 
 	ALT_GameState(const FObjectInitializer& ObjectInitializer);
 
-//public methods
-public:
+//protected methods
+protected:
 	
-	
-	bool IsEveryoneAliveHasFinished() const;
-
 	UFUNCTION()
-		void UpdateMainMatchState();
+		virtual void UpdateMainMatchState();
 	
-
-	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 //public values
 public:
 
-	FOnInGameMatchStateChanged OnInGameMatchStateChangedBind;
+	UPROPERTY(BlueprintAssignable, Category = "InGameMatchState")
+		FOnInGameMatchStateChanged OnInGameMatchStateChangedBind;
 
-//private values
-private:
+//protected values
+protected:
 	
 	UPROPERTY(ReplicatedUsing=OnRep_InGameMatchState)
 		EInGameMatchState InGameMatchState;
 	
-	
-	FTimerHandle PreparationTimerHandle;
+	UPROPERTY(EditDefaultsOnly, Replicated, Category = "GameInfos|Preparation")
+		FInGameStateInfo PreparationInfo;
 
-	FTimerHandle MatchTimerHandle;
-	
-
-	UPROPERTY(Replicated)
-		float CurrentPreparationTime = 0.0f;
-
-	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Preparation")
-		float PreparationTimeStep = 1.0f;
-
-	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Preparation")
-		float PreparationTimeUpdateFrequency = 1.0f;
-	
-
-	UPROPERTY(Replicated)
-		float CurrentMatchTime = 0.0f;
-
-	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Match")
-		float MatchTimeStep = 1.0f;
-
-	UPROPERTY(Replicated, EditDefaultsOnly, Category = "Match")
-		float MatchTimeUpdateFrequency = 1.0f;
-	
-
-	UPROPERTY(Replicated)
-		bool IsPreparationTimerActive = true;
-
-	UPROPERTY(Replicated)
-		bool IsMatchTimerActive = true;
+	UPROPERTY(EditDefaultsOnly, Replicated, Category = "GameInfos|Match")
+		FInGameStateInfo MatchInfo;
 
 //protected methods
 protected:
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 	virtual void BeginPlay() override;
 
@@ -91,10 +63,10 @@ protected:
 		virtual void OnRep_InGameMatchState();
 
 	UFUNCTION()
-		virtual void PreparationTimerTicker(); // TODO move to GameMode
+		virtual void PreparationTimerTicker();
 
 	UFUNCTION()
-		virtual void MatchTimerTicker(); // TODO move to GameMode
+		virtual void MatchTimerTicker();
 
 //>>..........................................................................................................................<<//
 
@@ -104,13 +76,17 @@ protected:
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "Preparation")
-		FORCEINLINE float GetCurrentPreparationTime() const { return CurrentPreparationTime; }
+		FORCEINLINE float GetCurrentPreparationTime() const { return PreparationInfo.CurrentTime; }
 
 	UFUNCTION(BlueprintCallable, Category = "Match")
-		FORCEINLINE float GetCurrentMatchTime() const { return CurrentMatchTime; }
+		FORCEINLINE float GetCurrentMatchTime() const { return MatchInfo.CurrentTime; }
 
 	UFUNCTION(BlueprintCallable, Category = "InGameMatchState")
 		FORCEINLINE EInGameMatchState GetInGameMatchState() const { return InGameMatchState; }
+
+	
+	UFUNCTION(BlueprintCallable)
+		bool IsEveryoneAliveHasFinished() const;
 
 
 	UFUNCTION(BlueprintCallable, Category = "Players")
@@ -118,5 +94,4 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "Players")
 		void GetSortedLosers(TArray<ALT_PlayerState*>& Losers);
-	
 };

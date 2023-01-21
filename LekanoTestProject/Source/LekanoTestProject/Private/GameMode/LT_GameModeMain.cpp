@@ -4,6 +4,7 @@
 
 #include "GameMode/LT_GameState.h"
 #include "GameMode/LT_PlayerState.h"
+#include "GameMode/Spectator/LT_SpectatorPawn.h"
 #include "LekanoTestProject/Public/Character/Player/LT_PlayerController.h"
 
 
@@ -15,6 +16,7 @@ ALT_GameModeMain::ALT_GameModeMain()
 	PlayerControllerClass = ALT_PlayerController::StaticClass();
 	GameStateClass = ALT_GameState::StaticClass();
 	PlayerStateClass = ALT_PlayerState::StaticClass();
+	SpectatorClass = ALT_SpectatorPawn::StaticClass();
 }
 
 
