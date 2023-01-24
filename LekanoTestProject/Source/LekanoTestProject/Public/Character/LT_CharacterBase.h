@@ -72,8 +72,8 @@ public:
 		FORCEINLINE bool GetCanMove() const { return CanMove; };
 
 	UFUNCTION(BlueprintCallable, Category = "BaseCharacter|Moving")
-		FORCEINLINE bool SetCanMove(bool NewCanMove) { return CanMove = NewCanMove; };
-
+		FORCEINLINE void SetCanMove(bool NewCanMove) { if( GetLocalRole() == ROLE_Authority ) CanMove = NewCanMove; } // only on server
+  
 	
 	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, meta = (BlueprintProtected))
 		void OnInGameMatchStateChanged(const EInGameMatchState NewMatchState);
@@ -98,22 +98,22 @@ public:
 	/*
 		Character sprint speed
 	*/
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
 		float SprintSpeed = 900.0f;
 	/*
 		Character jog speed
 	*/
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
 		float JogSpeed = 600.0f;
 	/*
 		Character walk speed
 	*/
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
 		float WalkSpeed = 300.0f;
 	/*
 		Character moving acceleration
 	*/
-	UPROPERTY(Replicated, EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "BaseCharacter|Moving")
 		float MovingAcceleration = 900.0f;
 
 	/*

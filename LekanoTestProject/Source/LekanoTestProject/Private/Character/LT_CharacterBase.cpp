@@ -13,6 +13,7 @@
 #include "GameFramework/PlayerState.h"
 #include "GameMode/LT_GameState.h"
 #include "GameMode/LT_PlayerState.h"
+
 #include "Net/UnrealNetwork.h"
 
 
@@ -50,10 +51,6 @@ void ALT_CharacterBase::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& Ou
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 
 	DOREPLIFETIME(ALT_CharacterBase, CanMove);
-	DOREPLIFETIME(ALT_CharacterBase, WalkSpeed);
-	DOREPLIFETIME(ALT_CharacterBase, JogSpeed);
-	DOREPLIFETIME(ALT_CharacterBase, SprintSpeed);
-	DOREPLIFETIME(ALT_CharacterBase, MovingAcceleration);
 }
 
 void ALT_CharacterBase::BeginPlay()

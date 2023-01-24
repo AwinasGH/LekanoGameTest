@@ -44,18 +44,25 @@ protected:
 	UPROPERTY(ReplicatedUsing=OnRep_InGameMatchState)
 		EInGameMatchState InGameMatchState;
 	
-	UPROPERTY(EditDefaultsOnly, Replicated, Category = "GameInfos|Preparation")
+
+	UPROPERTY(EditDefaultsOnly, Replicated, BlueprintReadOnly, Category = "GameInfos|Preparation|Timer")
+		float CurrentPreparationTime = 0.0f;
+	
+	UPROPERTY(EditDefaultsOnly, Category = "GameInfos|Preparation")
 		FInGameStateInfo PreparationInfo;
 
-	UPROPERTY(EditDefaultsOnly, Replicated, Category = "GameInfos|Match")
+	
+	UPROPERTY(EditDefaultsOnly, Replicated, BlueprintReadOnly, Category = "GameInfos|Match|Timer")
+		float CurrentMatchTime = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly, Category = "GameInfos|Match")
 		FInGameStateInfo MatchInfo;
 
 //protected methods
 protected:
 
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
-
-	virtual void BeginPlay() override;
+	
 
 	virtual void OnRep_MatchState() override;
 	
@@ -76,10 +83,10 @@ protected:
 public:
 
 	UFUNCTION(BlueprintCallable, Category = "Preparation")
-		FORCEINLINE float GetCurrentPreparationTime() const { return PreparationInfo.CurrentTime; }
+		FORCEINLINE float GetCurrentPreparationTime() const { return CurrentPreparationTime; }
 
 	UFUNCTION(BlueprintCallable, Category = "Match")
-		FORCEINLINE float GetCurrentMatchTime() const { return MatchInfo.CurrentTime; }
+		FORCEINLINE float GetCurrentMatchTime() const { return CurrentMatchTime; }
 
 	UFUNCTION(BlueprintCallable, Category = "InGameMatchState")
 		FORCEINLINE EInGameMatchState GetInGameMatchState() const { return InGameMatchState; }
