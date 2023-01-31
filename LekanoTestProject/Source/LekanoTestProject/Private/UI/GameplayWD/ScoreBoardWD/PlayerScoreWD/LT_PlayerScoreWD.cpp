@@ -16,7 +16,7 @@ void ULT_PlayerScoreWD::InitializePlayerScoreWD(int32 PlayerID, float PlayerScor
 {
 	if( IsValid(PlayerIDTextBlock) ) PlayerIDTextBlock->SetText(UKismetTextLibrary::Conv_IntToText(PlayerID));
 	
-	if( IsValid(ScoreTextBlock) ) ScoreTextBlock->SetText(UKismetTextLibrary::Conv_FloatToText(PlayerScore, ToZero));
+	if( IsValid(ScoreTextBlock) ) ScoreTextBlock->SetText(UKismetTextLibrary::Conv_DoubleToText(PlayerScore, ToZero));
 	
 	if( HasFinished != true ) ColorAndOpacity.A = 0.5;
 }

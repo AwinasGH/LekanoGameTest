@@ -21,12 +21,15 @@ struct FInGameStateInfo
 public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Timer")
+		float CurrentStateTime = 0.0f;
+
+	UPROPERTY(EditDefaultsOnly, NotReplicated, BlueprintReadOnly, Category = "Timer")
 		float TimeStep = 1.0f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Timer")
+	UPROPERTY(EditDefaultsOnly, NotReplicated, BlueprintReadOnly, Category = "Timer")
 		float TimeUpdateFrequency = 1.0f;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Timer")
+	UPROPERTY(EditDefaultsOnly, NotReplicated, BlueprintReadOnly, Category = "Timer")
 		bool IsTimerActive = true;
 
 public:

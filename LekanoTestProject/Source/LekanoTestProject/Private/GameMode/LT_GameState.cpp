@@ -19,8 +19,8 @@ void ALT_GameState::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLif
 	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
 	
 	DOREPLIFETIME(ALT_GameState, InGameMatchState);
-	DOREPLIFETIME(ALT_GameState, CurrentPreparationTime);
-	DOREPLIFETIME(ALT_GameState, CurrentMatchTime);
+	DOREPLIFETIME(ALT_GameState, PreparationInfo);
+	DOREPLIFETIME(ALT_GameState, MatchInfo);
 }
 
 
@@ -33,8 +33,8 @@ void ALT_GameState::OnRep_MatchState()
 
 	if ( MatchState == MatchState::InProgress )
 	{
-		CurrentPreparationTime = LGameMode->GetPreparationTime();
-		CurrentMatchTime = LGameMode->GetMatchTime();
+		PreparationInfo.CurrentStateTime= LGameMode->GetPreparationTime();
+		MatchInfo.CurrentStateTime = LGameMode->GetMatchTime();
 
 		for( const auto& BasePlayerState : PlayerArray )
 		{
@@ -74,7 +74,7 @@ void ALT_GameState::OnRep_InGameMatchState()
 
 void ALT_GameState::PreparationTimerTicker()
 {
-	if( FMath::IsNearlyZero(CurrentPreparationTime) || CurrentPreparationTime < 0.0f )
+	if( FMath::IsNearlyZero(PreparationInfo.CurrentStateTime) || PreparationInfo.CurrentStateTime < 0.0f )
 	{
 		InGameMatchState = EInGameMatchState::InProgress;
 		OnRep_InGameMatchState();
@@ -89,12 +89,12 @@ void ALT_GameState::PreparationTimerTicker()
 		return;
 	}
 
-	CurrentPreparationTime -= PreparationInfo.TimeStep;
+	PreparationInfo.CurrentStateTime -= PreparationInfo.TimeStep;
 }
 
 void ALT_GameState::MatchTimerTicker()
 {
-	if( FMath::IsNearlyZero(CurrentMatchTime) || CurrentMatchTime < 0.0f )
+	if( FMath::IsNearlyZero(MatchInfo.CurrentStateTime) || MatchInfo.CurrentStateTime < 0.0f )
 	{
 		InGameMatchState = EInGameMatchState::Ended;
 		OnRep_InGameMatchState();
@@ -106,7 +106,7 @@ void ALT_GameState::MatchTimerTicker()
 		return;
 	}
 
-	CurrentMatchTime -= MatchInfo.TimeStep;
+	MatchInfo.CurrentStateTime -= MatchInfo.TimeStep;
 }
 
 void ALT_GameState::GetSortedFinalists(TArray<ALT_PlayerState*>& Finalists)
